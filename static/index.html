@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeMentor AI - Interactive Programming Tutor</title>
+    <!-- Google Fonts: Inter and Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome Icons for clean UI -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Markdown Parser (Marked.js) to render AI lessons nicely -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app" class="app-container">
+        
+        <!-- Top Navigation Bar -->
+        <header class="navbar">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap logo-icon"></i>
+                <span class="logo-text">Code<span class="logo-highlight">Mentor</span> AI</span>
+                <span class="status-badge"><span class="pulse"></span>AI Connected</span>
+            </div>
+            
+            <div class="nav-controls">
+                <button id="change-language-btn" class="nav-btn secondary-btn" style="display: none;">
+                    <i class="fa-solid fa-code"></i> Change Language
+                </button>
+                <button id="config-api-btn" class="nav-btn primary-btn">
+                    <i class="fa-solid fa-key"></i> Configure API Key
+                </button>
+            </div>
+        </header>
+
+        <!-- API Key Setup Modal -->
+        <div id="api-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fa-solid fa-key"></i> Setup Gemini API Key</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <p>To run the AI features, paste your <strong>Gemini API Key</strong> below. This key is saved locally in your browser and used only to call the tutor APIs.</p>
+                    <div class="api-key-instructions">
+                        <p><i class="fa-solid fa-circle-info"></i> Get a free API key from the <a href="https://aistudio.google.com/" target="_blank" rel="noopener noreferrer">Google AI Studio <i class="fa-solid fa-up-right-from-square"></i></a></p>
+                    </div>
+                    <div class="input-group">
+                        <label for="api-key-input">Gemini API Key</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+                            <button type="button" id="toggle-key-visibility"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="save-api-key" class="nav-btn primary-btn">Save Key</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Selector Overlay (Shown when no language selected) -->
+        <section id="language-selector" class="selector-overlay">
+            <div class="selector-content">
+                <h1>Unlock Programming Mastery</h1>
+                <p class="subtitle">Select a programming language to begin your AI-guided interactive coding journey.</p>
+                
+                <div class="language-grid">
+                    <div class="lang-card" data-lang="Python">
+                        <div class="lang-icon py-icon"><i class="fa-brands fa-python"></i></div>
+                        <h3>Python</h3>
+                        <p>Simple syntax. Ideal for beginners, automation, data science, and AI development.</p>
+                        <span class="start-text">Start Learning <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                    
+                    <div class="lang-card" data-lang="JavaScript">
+                        <div class="lang-icon js-icon"><i class="fa-brands fa-js"></i></div>
+                        <h3>JavaScript</h3>
+                        <p>The language of the web. Build interactive frontend UIs and scalable backend applications.</p>
+                        <span class="start-text">Start Learning <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+
+                    <div class="lang-card" data-lang="C++">
+                        <div class="lang-icon cpp-icon"><i class="fa-solid fa-microchip"></i></div>
+                        <h3>C++</h3>
+                        <p>High performance. Excellent for game development, systems coding, and core algorithms.</p>
+                        <span class="start-text">Start Learning <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+
+                    <div class="lang-card" data-lang="Java">
+                        <div class="lang-icon java-icon"><i class="fa-brands fa-java"></i></div>
+                        <h3>Java</h3>
+                        <p>Object-oriented, secure, and robust. Used globally in enterprise networks and Android apps.</p>
+                        <span class="start-text">Start Learning <i class="fa-solid fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Workspace (Visible after selecting language) -->
+        <main id="workspace" class="workspace-layout" style="display: none;">
+            
+            <!-- Sidebar: Concepts Selector -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <span class="sidebar-title">Core Modules</span>
+                    <span id="current-lang-display" class="lang-tag">Python</span>
+                </div>
+                <nav class="concept-list">
+                    <button class="concept-item active" data-concept="Variables and Data Types">
+                        <span class="concept-index">01</span> Variables & Types
+                    </button>
+                    <button class="concept-item" data-concept="Conditional Statements">
+                        <span class="concept-index">02</span> Conditionals (If/Else)
+                    </button>
+                    <button class="concept-item" data-concept="Loops (For and While)">
+                        <span class="concept-index">03</span> Loops (For/While)
+                    </button>
+                    <button class="concept-item" data-concept="Functions and Parameters">
+                        <span class="concept-index">04</span> Functions & Parameters
+                    </button>
+                    <button class="concept-item" data-concept="Arrays and Lists">
+                        <span class="concept-index">05</span> Arrays & Lists
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Workspace Body: Split Screen -->
+            <section class="workspace-body">
+                
+                <!-- Left Pane: AI Lessons & Challenge -->
+                <div class="pane left-pane">
+                    <div class="pane-header tabs">
+                        <button id="tab-learn" class="tab-btn active"><i class="fa-solid fa-book-open"></i> Learn Concept</button>
+                        <button id="tab-practice" class="tab-btn"><i class="fa-solid fa-keyboard"></i> Practice Exercise</button>
+                    </div>
+                    
+                    <div class="pane-content scrollable">
+                        <!-- Shimmer Loading State -->
+                        <div id="lesson-loader" class="shimmer-wrapper" style="display: none;">
+                            <div class="shimmer-line title"></div>
+                            <div class="shimmer-line paragraph"></div>
+                            <div class="shimmer-line paragraph"></div>
+                            <div class="shimmer-line paragraph"></div>
+                            <div class="shimmer-line code"></div>
+                        </div>
+
+                        <!-- Learn Panel -->
+                        <div id="learn-panel" class="panel-section active">
+                            <h2 id="lesson-title" class="section-title">Variables and Data Types</h2>
+                            <div id="lesson-explanation" class="markdown-body">
+                                <!-- AI generated content gets injected here -->
+                            </div>
+                            <div class="code-preview-block">
+                                <div class="code-header">
+                                    <span>Code Example</span>
+                                    <button class="copy-code-btn"><i class="fa-regular fa-copy"></i> Copy</button>
+                                </div>
+                                <pre><code id="lesson-code-example" class="language-code"># Example code example</code></pre>
+                            </div>
+                            <div class="next-action-prompt">
+                                <p>Ready to put this concept into action?</p>
+                                <button id="go-to-challenge-btn" class="nav-btn primary-btn">Go to Practice Challenge <i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Practice Panel -->
+                        <div id="practice-panel" class="panel-section">
+                            <h2 id="challenge-title" class="section-title">Challenge: Greeting variables</h2>
+                            <div id="challenge-instructions" class="markdown-body">
+                                <!-- AI generated challenge gets injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Pane: Coder Editor & Submissions -->
+                <div class="pane right-pane">
+                    <div class="pane-header editor-header">
+                        <div class="editor-title">
+                            <i class="fa-solid fa-code editor-icon"></i>
+                            <span id="editor-title-text">Python Code Editor</span>
+                        </div>
+                        <div class="editor-actions">
+                            <button id="reset-code-btn" class="icon-btn" title="Reset to Starter Code">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Editor Content -->
+                    <div class="pane-content editor-body">
+                        <div class="editor-wrapper">
+                            <!-- Line Numbers Column -->
+                            <div id="line-numbers" class="line-numbers">1</div>
+                            <textarea id="code-editor" spellcheck="false" placeholder="# Write your code solution here..."></textarea>
+                        </div>
+                        
+                        <!-- Control Actions -->
+                        <div class="editor-controls">
+                            <button id="get-hint-btn" class="nav-btn warning-btn">
+                                <i class="fa-regular fa-lightbulb"></i> Get Hint
+                            </button>
+                            <button id="submit-code-btn" class="nav-btn success-btn">
+                                <i class="fa-solid fa-circle-check"></i> Submit & Verify
+                            </button>
+                        </div>
+
+                        <!-- Hint Box -->
+                        <div id="hint-box" class="hint-box" style="display: none;">
+                            <div class="hint-header">
+                                <span><i class="fa-solid fa-lightbulb hint-bulb"></i> AI Mentor Hint</span>
+                                <button id="close-hint-btn" class="close-btn">&times;</button>
+                            </div>
+                            <p id="hint-text">If you name your variable "x", change it to "message".</p>
+                        </div>
+                        
+                        <!-- Verify Loader -->
+                        <div id="verify-loader" class="verify-loader" style="display: none;">
+                            <div class="spinner"></div>
+                            <span>Analyzing your code structure, correctness and logic...</span>
+                        </div>
+
+                        <!-- Feedback Box -->
+                        <div id="feedback-box" class="feedback-box" style="display: none;">
+                            <div class="feedback-header">
+                                <div class="badge-title">
+                                    <span id="feedback-badge" class="badge success">Passed</span>
+                                    <span id="feedback-score">Score: 95/100</span>
+                                </div>
+                                <button id="close-feedback-btn" class="close-btn">&times;</button>
+                            </div>
+                            
+                            <div class="feedback-tabs">
+                                <button id="fb-tab-review" class="fb-tabactive">AI Critique</button>
+                                <button id="fb-tab-solution">Optimized Solution</button>
+                            </div>
+                            
+                            <div class="feedback-content">
+                                <div id="feedback-critique" class="markdown-body feedback-scroll">
+                                    <!-- AI code feedback gets injected here -->
+                                </div>
+                                <div id="feedback-solution" class="feedback-scroll" style="display: none;">
+                                    <pre><code id="feedback-solution-code"># Optimized Code Solution</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Drawer: Developer API Logs Console -->
+            <footer id="dev-console" class="dev-console collapsed">
+                <div class="console-header" id="console-toggle">
+                    <div class="console-title">
+                        <i class="fa-solid fa-terminal"></i>
+                        <span>Developer Sandbox API Console</span>
+                    </div>
+                    <div class="console-badge">Learn Mode</div>
+                    <i class="fa-solid fa-chevron-up toggle-icon"></i>
+                </div>
+                
+                <div class="console-body">
+                    <div class="console-tabs">
+                        <button id="console-tab-prompt" class="console-tab-btn active">System Prompt Sent</button>
+                        <button id="console-tab-response" class="console-tab-btn">AI JSON Received</button>
+                    </div>
+                    <div class="console-content">
+                        <!-- Prompt View -->
+                        <div id="console-prompt-view" class="console-pane active">
+                            <pre><code id="console-prompt-text">No prompt sent yet. Select a concept to trigger an API call.</code></pre>
+                        </div>
+                        <!-- Response View -->
+                        <div id="console-response-view" class="console-pane">
+                            <pre><code id="console-response-text">No API responses received yet.</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+    
+    <!-- Code script linkage -->
+    <script src="app.js"></script>
+</body>
+</html>
